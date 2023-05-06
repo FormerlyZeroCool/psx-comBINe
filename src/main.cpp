@@ -211,7 +211,6 @@ int main(int argc, char *argv[]){
 	if(dumpBinFiles(binFilenameVect, outBinFileString) != 0) {
 		errorMsg(2, "main", "Could not dump binary files: ");
 	}
-	
 	/**************************************************************************/
 	//Open the output cue file and create the file. Exits on failure
 	CueHandler cueOut(outCueFileString);
@@ -220,7 +219,6 @@ int main(int argc, char *argv[]){
 	//Combine the data from all FILES in cueIn, to a single file on cueOut.
 	//Pass the cueOut object, the relative .bin name (NOT OUTPUT BIN STRING)
 	cueIn.combineCueFiles(cueOut, (baseFileString + ".bin"), binOffsetBytes);
-	
 	//Write the result of the combination to the cueOut file.
 	cueOut.outputCueData();
 	cueOut.write();

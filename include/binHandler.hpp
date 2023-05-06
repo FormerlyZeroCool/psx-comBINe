@@ -27,6 +27,6 @@ extern std::vector<unsigned long> binOffsetBytes;
 //Pass vector to bin filenames. Opens each file one at a time and dumps them
 //into outFn as a binary file.
 //Returns error status (0 success, 1 failure)
-int dumpBinFiles(std::vector<std::string> &binVect, const std::string outFn);
+int dumpBinFiles(std::vector<std::string> &binVect, const std::string& outFn);
 
 #endif

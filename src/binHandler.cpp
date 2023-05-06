@@ -19,22 +19,21 @@
 //.cue output INDEX value (in time format which gets converted later)
 std::vector<unsigned long> binOffsetBytes;
 
-int dumpBinFiles(std::vector<std::string> &binVect, const std::string outFn) {
+int dumpBinFiles(std::vector<std::string> &binVect, const std::string& outFn) {
 	/*** Setup ***/
 	//Input and output .bin files.
-	std::fstream binFileOut, binFileIn;
+	std::fstream binFileOut(outFn.c_str(), std::ios::out | std::ios::binary);
 
-	//Create the output binary file and check it is open
-	binFileOut.open(outFn.c_str(), std::ios::out | std::ios::binary);
 	std::cout << "creating " << outFn << std::endl;
 	if(!binFileOut) errorMsg(2, "dumpBinFiles", 
 	                         "Cannot create output .bin file. Check privelages");
 	
-	//Current byte in array, bytes in each file, and total bytes from all files
-	size_t arrBytes = 0, fileBytes = 0, totalBytes = 0;
+	//Total bytes from all files
+	size_t totalBytes = 0;
 	
 	//Create a heap byte array (From defined size in header)
-	std::vector<char> byteArray(_def_ARR_SIZE);
+	std::string byteArray;
+	byteArray.resize(_def_ARR_SIZE);
 	//TODO error handle
 	//errorMsg(2, "Failed to allocate the bin buffer array (Requires 100MiB free RAM)");
 	
@@ -42,57 +41,53 @@ int dumpBinFiles(std::vector<std::string> &binVect, const std::string outFn) {
 	/*** runtime ***/
 	//Go through all bin filenames in the vector of strings
 	for(size_t indx = 0; indx < binVect.size(); indx++) {
-		
+		//bytes in each file.
+		size_t fileBytes = 0;
 		//Print message about file (flush to ensure the text is printed first)
 		std::cout << "Dumping: " << binVect.at(indx) << "    " << std::flush;
 		
 		//Open input binary file to the current string in the vecor.
-		binFileIn.open(binVect[indx].c_str(), std::ios::in | std::ios::binary);
+		std::fstream binFileIn(binVect[indx], std::ios::in | std::ios::binary);
 		//error check
 		if(!binFileIn) {
 			errorMsg(2, "dumpBinFiles", "Can not open " + binVect[indx]);
 		}
-		
-		//Seek to the beginning of the in file to clear flags. Belt and braces
-		binFileIn.seekg(0, std::ios::beg);
 		
 		//Log the Offset byte of the current bin file (starts at 0)
 		binOffsetBytes.push_back(totalBytes);
 		
 		//Get all the bytes from the current input and push them to output.
 
-		while(binFileIn.read(byteArray.data(), byteArray.size())) {
-			//get number of bytes read
-			const auto count_read = binFileIn.gcount();
-			arrBytes += count_read;
+		while(binFileIn.read(byteArray.data(), byteArray.size())) 
+		{
+			//Current bytes in array
+			const auto arrBytes = binFileIn.gcount();
 			
 			//Dump buffer to the output file.
-			binFileOut.write(byteArray.data(), count_read);
-				
+			binFileOut.write(byteArray.data(), arrBytes);
 			
 			//Keep track of how many bytes read so far, fileByte gets reset at
-			//next loop, totalBytes does not get reset
-			totalBytes += count_read;
-			fileBytes += count_read;
+			//next loop, totalBytes does not get reset 
+			totalBytes += arrBytes;
+			fileBytes += arrBytes;
 		}
 		
-		//Close the current file for next loop
-		binFileIn.close();
 		
 		//Report how many megabytes the file is, that it is done, then reset.
 		std::cout << padMiBStr(fileBytes, 3) << std::endl;
+
+	
 		fileBytes = 0;
 	}
-	
 	//Flush what is left of the byte array to the output file
-	if(arrBytes != 0) binFileOut.write(byteArray.data(), arrBytes);
+	//if(arrBytes != 0) binFileOut.write(byteArray.data(), arrBytes);
 
 	
 	//Print message that the outfile is waiting to finish wiring
 	std::cout << "\nFinishing write to file ..." << std::flush;
 	
-	//Close the output file
-	binFileOut.close();
+	//Flush the output file
+	binFileOut.flush();
 	
 	//Report finished writing
 	std::cout << " Done" << std::endl;
@@ -100,7 +95,6 @@ int dumpBinFiles(std::vector<std::string> &binVect, const std::string outFn) {
 	//Report completion and bytes written to the output bin file
 	std::cout << "Successfully dumped " << padByteStr(totalBytes) << " to " 
 	          << outFn << std::endl;
-
 	//Return 0 for success
 	return 0;
 }
