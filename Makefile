@@ -1,46 +1,32 @@
-#Output directories
-SRC_DIR := src
-OBJ_DIR := obj
-BIN_DIR := bin
+# compiler
+CXX := g++
+# flags
+CXXFLAGS := -std=c++17 -Wall -Wextra -Werror
+# includes
+INCLUDES := -I./include
+# source directory
+SRCDIR := ./src
+# object directory
+OBJDIR := ./obj
+# executable name
+EXENAME := myprogram
 
-#TARGET
-TARGET := $(BIN_DIR)/comBINe
+# source files
+SRCS := $(wildcard $(SRCDIR)/*.cpp)
+# object files
+OBJS := $(patsubst $(SRCDIR)/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 
-#Source files
-SRCS := $(wildcard $(SRC_DIR)/*.cpp)
-#Objects derived from Sources
-OBJS := $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRCS))
+# header files
+HEADERS := $(wildcard $(INCLUDES)/*.h)
 
-#Compiler
-CC := g++
+# rule for building object files
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(HEADERS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
-#Flags
-CPPFLAGS := -Iinclude -MMD -MP
-CFLAGS   := -Wall -std=c++17
-LDFLAGS  := 
-LDLIBS   := 
+# rule for building the executable
+$(EXENAME): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $^ -o $@
 
-.PHONY: all install clean
-
-all: $(TARGET)
-
-#Make binary
-$(TARGET): $(OBJS) | $(BIN_DIR)
-	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
-
-#Make objects
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@ 
-
-#Create obj and bin directory if they don't exist
-$(BIN_DIR) $(OBJ_DIR):
-	mkdir -p $@
-
-install: $(TARGET)
-	mv ./$(TARGET) /usr/local/bin
-	
-#Remove objects and binary
+.PHONY: clean
 clean:
-	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
-
--include $(OBJ:.o=.d)
+	rm -f $(OBJDIR)/*.o $(EXENAME)

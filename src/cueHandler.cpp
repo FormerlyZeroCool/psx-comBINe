@@ -33,12 +33,10 @@ const std::string t_TRACK_str[] = {
 };
 
 /*** CueHandler Functions *****************************************************/
-CueHandler::CueHandler(const std::string filename) {
-	//Open the cue file passed
-	cueFile = new TeFiEd(filename);
+CueHandler::CueHandler(const std::string filename):cueFile(filename) {
 	
 	//Set safety flag on the .cue input file. 100KB
-	cueFile->setByteLimit(102400);
+	cueFile.setByteLimit(102400);
 	
 	//Make sure the input filename is a valid .cue file
 	if( validateCueFilename(filename) != 0) {
@@ -48,12 +46,10 @@ CueHandler::CueHandler(const std::string filename) {
 	}
 	
 	//Debug option
-	//cueFile->setVerbose(true);
+	//cueFile.setVerbose(true);
 }
 
 CueHandler::~CueHandler() {
-	//Delete the TeFiEd object
-	delete cueFile;
 	
 	//Clear Vector RAM
 	cleanFILE();
@@ -61,16 +57,16 @@ CueHandler::~CueHandler() {
 
 void CueHandler::read() {
 	//Read the cueFile TeFiEd Obj into RAM
-	if(cueFile->read() != 0) {
+	if(cueFile.read() != 0) {
 		exit(EXIT_FAILURE); 
 	}
 	
 	//Make sure the Line Ending type is Unix
-	cueFile->convertLineEnding(LineEnding::Unix);	
+	cueFile.convertLineEnding(LineEnding::Unix);	
 }
 
 void CueHandler::create() {
-	if(cueFile->create() != 0) {
+	if(cueFile.create() != 0) {
 		exit(EXIT_FAILURE);
 	}
 }
@@ -345,9 +341,9 @@ void CueHandler::getCueData() {
 	cleanFILE();
 
 	//Go through all the lines in the cue file.
-	for(size_t lineNo = 1; lineNo <= cueFile->lines(); lineNo++) {
+	for(size_t lineNo = 1; lineNo <= cueFile.lines(); lineNo++) {
 		//Copy the current line to a new string
-		std::string cLineStr = cueFile->getLine(lineNo);
+		std::string cLineStr = cueFile.getLine(lineNo);
 		
 		//Get the type of the current line
 		t_LINE cLineType = LINEStrToType(cLineStr);
@@ -411,7 +407,7 @@ void CueHandler::getCueData() {
 	}
 }
 
-int CueHandler::combineCueFiles(CueHandler &combined, const std::string outBin,
+int CueHandler::combineCueFiles(CueHandler &combined, const std::string& outBin,
                                 const std::vector <unsigned long> offsetBytes) {
 	//Clear the pointer object FILE vector RAM
 	combined.cleanFILE();
@@ -454,7 +450,7 @@ int CueHandler::outputCueData() {
 		FileData pFILE = this->FILE[ cFile ];
 		
 		//Print Current FILE string to the cue file
-		cueFile->append( generateFILELine(pFILE) );
+		cueFile.append( generateFILELine(pFILE) );
 		
 		//Go through all the TRACKs
 		for(size_t cTrack = 0; cTrack < pFILE.TRACK.size(); cTrack++) {
@@ -462,7 +458,7 @@ int CueHandler::outputCueData() {
 			TrackData pTRACK = pFILE.TRACK[ cTrack ];
 			
 			//Print current TRACK string to the cue file
-			cueFile->append( generateTRACKLine(pTRACK) );
+			cueFile.append( generateTRACKLine(pTRACK) );
 			
 			//Go through all INDEXs
 			for(size_t cIndex = 0; cIndex < pTRACK.INDEX.size(); cIndex++) {
@@ -470,7 +466,7 @@ int CueHandler::outputCueData() {
 				IndexData pINDEX = pTRACK.INDEX[ cIndex ];
 				
 				//Print current INDEX string to the cue file
-				cueFile->append( generateINDEXLine(pINDEX) );
+				cueFile.append( generateINDEXLine(pINDEX) );
 			}
 		}
 	}
@@ -522,8 +518,7 @@ void CueHandler::printFILE(FileData & pFILE) {
 
 /** Writing functions *********************************************************/
 void CueHandler::write() {
-	if(cueFile)
-		cueFile->overwrite();
+	cueFile.overwrite();
 }
 
 /** AUX functions *************************************************************/
@@ -564,7 +559,7 @@ std::string CueHandler::bytesToTimestamp(const unsigned long bytes) {
 	return timestamp;
 }
 
-unsigned long CueHandler::timestampToBytes(const std::string timestamp) {
+unsigned long CueHandler::timestampToBytes(const std::string& timestamp) {
 	//Make sure the string input is long enough to have xx:xx:xx timestamp
 	if(timestamp.length() != 8) {
 		errorMsg(1, "timestampToBytes", 
@@ -587,7 +582,7 @@ unsigned long CueHandler::timestampToBytes(const std::string timestamp) {
 	unsigned long bytes = sectors * 2352;
 	
 	//Error check if the input is divisible by a sector. Exit if not
-	if(bytes % 2352 != 0) {
+	if(bytes % psx_sector_size != 0) {
 		errorMsg(2, "timestampToBytes", "timestamp is not valid (SECTOR Bytes)");
 	}
 	
@@ -595,7 +590,7 @@ unsigned long CueHandler::timestampToBytes(const std::string timestamp) {
 }
 
 /*** Modified function from TeFiEd to not depend on object ********************/
-std::string CueHandler::getWord(const std::string input, unsigned int index) {
+std::string CueHandler::getWord(const std::string& input, unsigned int index) {
 	//If index is 0, set it to 1. always 1 indexed
 	if(index == 0) index = 1;
 	

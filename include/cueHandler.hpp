@@ -56,7 +56,7 @@ class CueHandler {
 	//Destructor, deletes metadata array and cleans up TeFiEd object
 	~CueHandler();
 	
-	TeFiEd *cueFile; //TeFiEd text file object
+	TeFiEd cueFile; //TeFiEd text file object
 	
 	/*** Cue file data structs ************************************************/
 	//INDEXs. Grandchild (3rd level) value. Max 99
@@ -145,7 +145,7 @@ class CueHandler {
 	
 	//Combines all the cue FILE data (removes seperate files) and pushes it
 	//to the CueHandler object passed via reference.
-	int combineCueFiles(CueHandler &combined, const std::string outFN,
+	int combineCueFiles(CueHandler &combined, const std::string& outFN,
 	                    const std::vector <unsigned long> offsetBytes);
 	
 	//Outputs the CueData to the cueFile
@@ -170,10 +170,10 @@ class CueHandler {
 	std::string bytesToTimestamp(const unsigned long bytes);
 	
 	//Converts an Audio CD timestamp into number of bytes
-	unsigned long timestampToBytes(const std::string timestamp);
+	unsigned long timestampToBytes(const std::string& timestamp);
 	
 	//Modified from TeFiEd. Returns -index- word in a string
-	std::string getWord(const std::string input, unsigned int index);
+	std::string getWord(const std::string& input, unsigned int index);
 	
 	//Takes an input uint32_t, zero-pads to -pad- then return a string
 	std::string padIntStr(const unsigned long val, const unsigned int len = 0,
