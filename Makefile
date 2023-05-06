@@ -1,7 +1,7 @@
 # compiler
 CXX := g++
 # flags
-CXXFLAGS := -std=c++17 -Wall -Wextra -Werror
+CXXFLAGS := -std=c++17 -Wall  -Werror
 # includes
 INCLUDES := -I./include
 # source directory
@@ -9,7 +9,7 @@ SRCDIR := ./src
 # object directory
 OBJDIR := ./obj
 # executable name
-EXENAME := myprogram
+EXENAME := comBINe
 
 # source files
 SRCS := $(wildcard $(SRCDIR)/*.cpp)

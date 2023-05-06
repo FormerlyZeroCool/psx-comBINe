@@ -74,7 +74,7 @@ int dumpBinFiles(std::vector<std::string> &binVect, const std::string& outFn) {
 		if(totalBytes % psx_sector_size != 0)
 		{
 			const size_t arrBytes = psx_sector_size - totalBytes % psx_sector_size;
-			for(int_fast32_t i = 0; i < arrBytes; i++)
+			for(uint_fast32_t i = 0; i < arrBytes; i++)
 			{
 				byteArray[i] = 0;
 			}

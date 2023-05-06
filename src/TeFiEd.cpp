@@ -30,24 +30,24 @@ TeFiEd::~TeFiEd() {
 }
 
 /** File Metadata getters *****************************************************/
-std::string TeFiEd::filename() {
+std::string& TeFiEd::filename() {
 	//Convert the const char to a string
-	return (std::string)m_filename;
+	return m_filename;
 }
 
 const char *TeFiEd::filename_c_str() {
 	return m_filename.c_str();
 }
 
-std::string TeFiEd::parentDir() {
+string_view TeFiEd::parentDir() {
 	std::string fn = this->filename();
 	//TODO Windows may not work with this methodology
 	
 	//If there is no / in the filename, assume the path to be ./
-	if(fn.find('/') == std::string::npos) return "./";
+	if(fn.find('/') == std::string::npos) return string_view("./", 2);
 	
 	//Otherwise return a substring of the filename string, from 0 to the last /
-	return fn.substr(0, fn.find_last_of('/') + 1);
+	return string_view(fn.c_str(), (fn.find_last_of('/') + 1));
 }
 
 size_t TeFiEd::bytes() {
@@ -291,8 +291,11 @@ void TeFiEd::convertLineEnding(const LineEnding type) {
 	}
 }
 
+int TeFiEd::append(const std::string&& inStr) {
+	return this->append(inStr);
+}
 //Append string to the end of the RAM File
-int TeFiEd::append(const std::string inStr) {
+int TeFiEd::append(const std::string& inStr) {
 	//Sanity check string and RAM size
 	if(checkString(inStr) != 0) {
 		return 1;
@@ -305,7 +308,7 @@ int TeFiEd::append(const std::string inStr) {
 	return 0;
 }
 
-int TeFiEd::insertLine(size_t line, const std::string inStr) {
+int TeFiEd::insertLine(size_t line, const std::string& inStr) {
 	//Decriment line if above 0, RAM File is indexed +1 from 'normal' notation
 	if(line > 0) {
 		--line;
@@ -329,7 +332,7 @@ int TeFiEd::insertLine(size_t line, const std::string inStr) {
 }
 
 //Append a string onto the end of a specific line
-int TeFiEd::appendLine(size_t line, const std::string inStr) {
+int TeFiEd::appendLine(size_t line, const std::string& inStr) {
 	//Decriment line if above 0, RAM File is indexed +1 from 'normal' notation
 	if(line > 0) {
 		--line;
@@ -349,7 +352,11 @@ int TeFiEd::appendLine(size_t line, const std::string inStr) {
 	return 0;
 }
 
-int TeFiEd::replace(size_t line, std::string inStr) {
+int TeFiEd::replace(size_t line, std::string&& inStr) {
+	return replace(line, inStr);
+}
+
+int TeFiEd::replace(size_t line, std::string& inStr) {
 	//Decriment line if above 0, RAM File is indexed +1 from 'normal' notation
 	if(line > 0) {
 		--line;
@@ -358,7 +365,7 @@ int TeFiEd::replace(size_t line, std::string inStr) {
 	//Make sure that the line requested is valid
 	if(line > m_ramfile.size()) {
 		//Error message and return fail
-		errorMsg("replsce", "Line", line + 1, "does not exist");
+		errorMsg("replace", "Line", line + 1, "does not exist");
 		
 		return 1;
 	}	

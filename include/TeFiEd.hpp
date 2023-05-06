@@ -18,6 +18,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <string_view.hpp>
 
 /*** Enum and types ***********************************************************/
 //Line ending type, for convertLineEnding
@@ -45,13 +46,13 @@ class TeFiEd {
 	
 	/** File Metadata getters *************************************************/
 	//Return the filename string (converted from const char* to string)
-	std::string filename();
+	std::string& filename();
 	//Return the filename string as a c string
 	const char* filename_c_str();
 	
 	//Returns the parent directory of the file. 
 	//e.g. /usr/test.txt will return /usr/
-	std::string parentDir();
+	string_view parentDir();
 	
 	//Scan the vector and return the number of bytes used. (Can be slow)
 	size_t bytes();
@@ -89,16 +90,18 @@ class TeFiEd {
 	
 		
 	//Appends a string to the end of the RAM File
-	int append(const std::string);
+	int append(const std::string&&);
+	int append(const std::string&);
 	
 	//Append a string onto the end of a specific line
-	int appendLine(size_t line, const std::string);
+	int appendLine(size_t line, const std::string&);
 	
 	//Inserts a line of text into the vector at passed line.
-	int insertLine(size_t line, const std::string);
+	int insertLine(size_t line, const std::string&);
 	
 	//Replaces [line] with the string passed
-	int replace(size_t line, std::string);
+	int replace(size_t line, std::string&&);
+	int replace(size_t line, std::string&);
 	
 	//Remove the specified line from RAM File.
 	int remove(size_t line);
