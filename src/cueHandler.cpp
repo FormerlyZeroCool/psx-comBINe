@@ -14,7 +14,7 @@
 *
 * (c) ADBeta
 *******************************************************************************/
-#include "cueHandler.hpp"
+#include <cueHandler.hpp>
 
 #include <iostream>
 #include <vector>
@@ -23,6 +23,7 @@
 #include "TeFiEd.hpp"
 #include "CLIah.hpp" //strToUpper function yoinketh
 
+const uint_fast32_t psx_sector_size = 2352;
 /*** Enum mapped strings (only for printFILE) *********************************/
 const std::string t_FILE_str[] = {"UNKNOWN", "BINARY"};   
 //
@@ -239,7 +240,7 @@ int CueHandler::validateINDEX(const IndexData &refINDEX) {
 	}
 
 	//Check if BYTES is divisible by SECTOR size
-	if(refINDEX.BYTES % 2352 != 0) {
+	if(refINDEX.BYTES % psx_sector_size != 0) {
 		errorMsg(0, "validateINDEX",
 		         "INDEX BYTES not divisible by SECTOR size");
 		return 2;

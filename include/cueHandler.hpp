@@ -22,6 +22,7 @@
 #ifndef CUE_HANDLER_H
 #define CUE_HANDLER_H
 
+extern const uint_fast32_t psx_sector_size;
 /*** Enums and strings of enums ***********************************************/
 /* Using plain enums to allow them to convert to int */
 //Valid CUE line types, including INVALID, REM and EMPTY string types.

@@ -15,10 +15,15 @@
 
 #ifndef BINHANDLER_H
 #define BINHANDLER_H
+#include <iostream>
+#include <vector>
+#include <fstream>
+
+#include "helpers.hpp"
+#include "cueHandler.hpp"
 
 //Define how large the RAM byte array while dumping should be. (4k)
 #define _def_ARR_SIZE 1<<12
-
 /** Variables *****************************************************************/
 //Each entity is at which byte a file transistion to the next file. This is for
 //.cue output INDEX value.

@@ -9,11 +9,6 @@
 *
 * (c) ADBeta
 *******************************************************************************/
-#include <iostream>
-#include <vector>
-#include <fstream>
-
-#include "helpers.hpp"
 #include "binHandler.hpp"
 //Each entity is at which byte a file transistion to the next file. This is for
 //.cue output INDEX value (in time format which gets converted later)
@@ -76,7 +71,20 @@ int dumpBinFiles(std::vector<std::string> &binVect, const std::string& outFn) {
 		//Report how many megabytes the file is, that it is done, then reset.
 		std::cout << padMiBStr(fileBytes, 3) << std::endl;
 
-	
+		if(totalBytes % psx_sector_size != 0)
+		{
+			const size_t arrBytes = psx_sector_size - totalBytes % psx_sector_size;
+			for(int_fast32_t i = 0; i < arrBytes; i++)
+			{
+				byteArray[i] = 0;
+			}
+			//Dump buffer to pad the output file.
+			binFileOut.write(byteArray.data(), arrBytes);
+			
+			//Keep track of how many bytes written so far
+			totalBytes += arrBytes;
+			
+		}
 		fileBytes = 0;
 	}
 	//Flush what is left of the byte array to the output file
