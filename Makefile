@@ -1,7 +1,7 @@
 # compiler
 CXX := g++
 # flags
-CXXFLAGS := -std=c++17 -Wall  -Werror -O3
+CXXFLAGS := -std=c++17 -Wall -O3
 # includes
 INCLUDES := -I./include
 # source directory
