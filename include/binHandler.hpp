@@ -23,7 +23,7 @@
 #include "cueHandler.hpp"
 
 //Define how large the RAM byte array while dumping should be. (4mb)
-#define _def_ARR_SIZE 1<<22
+#define _def_ARR_SIZE 1<<16
 /** Variables *****************************************************************/
 //Each entity is at which byte a file transistion to the next file. This is for
 //.cue output INDEX value.
